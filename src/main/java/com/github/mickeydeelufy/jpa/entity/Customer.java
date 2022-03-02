@@ -3,7 +3,11 @@ package com.github.mickeydeelufy.jpa.entity;
 import lombok.*;
 import org.hibernate.Hibernate;
 
-import javax.persistence.*;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.util.Objects;
 
 /***@Entity specifies that this class represents a JPA entity. By default, the class name would be
@@ -21,7 +25,7 @@ import java.util.Objects;
 /*** NoArgsConstructor from Lombok generates a constructor with no Arguments i.e Customer() {}
  * This is required by JPA. We do not use the it explicitly
  * **/
-@NoArgsConstructor
+//@NoArgsConstructor
 public class Customer {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
