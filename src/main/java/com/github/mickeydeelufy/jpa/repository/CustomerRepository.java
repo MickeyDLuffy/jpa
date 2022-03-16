@@ -3,6 +3,7 @@ package com.github.mickeydeelufy.jpa.repository;
 import com.github.mickeydeelufy.jpa.entity.Customer;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -18,11 +19,32 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     Customer findById(long id);
 
     /***
-     *  Pagina data with @Query and Page
+     *  Pagina data with @Query and Page;
+     *  Typically you might have to extend PagingAndSortingRepository, for pagination, but JpaRepo already extends that
      *  **/
 
     @Query("SELECT c FROM Customer c")
     Page<Customer> findAllPaged(Pageable pageable) ;
+
+    /***
+     *  paginating when using native queries
+     * @param pageable
+     *
+     */
+    @Query(value = "SELECT * FROM customer", countQuery = "SELECT  COUNT(*) FROM customer", nativeQuery = true)
+    Page<Customer> findAllPagedWithNativeQuery(Pageable pageable) ;
+
+
+
+    /***
+     *  Slice is almost Similar to a Page, but Page has extra methods like totalElements, totalPages i.e it runs a count
+     *  internally to get the total number of elements. This can be bring an overhead cost. use Slice if you dont really need
+     *  cpunt
+     * @param pageable
+     * @return
+     */
+    @Query("SELECT c FROM Customer c")
+    Slice<Customer> findAllPagedUsingSlice(Pageable pageable) ;
 
 
     /***
@@ -30,6 +52,8 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
      */
     @Query("SELECT c FROM Customer c WHERE c.firstName = :firstname ")
     Customer getCustomerByFirstName(@Param("firstname") String firstname);
+
+
 
     /***
      *

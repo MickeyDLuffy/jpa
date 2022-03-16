@@ -1,9 +1,14 @@
 package com.github.mickeydeelufy.jpa.controller;
 
+import com.github.mickeydeelufy.jpa.dto.Pageable;
+import com.github.mickeydeelufy.jpa.dto.TestFluentAccesor;
 import com.github.mickeydeelufy.jpa.entity.Customer;
 import com.github.mickeydeelufy.jpa.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,9 +35,27 @@ public class CustomerController {
     }
 
     @GetMapping("/p")
-    public List<Customer> findCustomersPaged(Pageable pageable) {
-        return customerRepository.findAllPaged(pageable).getContent();
+    public Page<Customer> findCustomersPaged() {
+        TestFluentAccesor testFluentAccesor = new TestFluentAccesor()
+                .name("Micke")
+                        .profession("lol");
+        System.out.println(testFluentAccesor.name());
+        List.of(Sort.Order.by("firstname"),Sort.Order.by("firstname") );
+        return customerRepository.findAllPaged(PageRequest.of(0,1));
     }
+
+    @GetMapping("/slice")
+    public Slice<Customer> findAllPagedUsingSlice(Pageable pageable) {
+        return customerRepository.findAllPagedUsingSlice(PageRequest.of(pageable.getPage(), pageable.getSize()));
+    }
+
+    @GetMapping("/native-query")
+    public Page<Customer> findAllPagedWithNativeQuery(@RequestParam(defaultValue = "0")  int page,
+                                                  @RequestParam(defaultValue = "10") int size) {
+        return customerRepository.findAllPagedWithNativeQuery(PageRequest.of(page,size));
+    }
+
+
 
     @GetMapping("/firstname")
     public Customer getCustomerByFirstName() {
@@ -50,6 +73,5 @@ public class CustomerController {
 
     @PostMapping
     public void saveUser() {
-//         customerRepository.insertIntoTable();
     }
 }
