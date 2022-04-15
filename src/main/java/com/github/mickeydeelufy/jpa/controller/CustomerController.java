@@ -5,13 +5,16 @@ import com.github.mickeydeelufy.jpa.dto.TestFluentAccesor;
 import com.github.mickeydeelufy.jpa.entity.Customer;
 import com.github.mickeydeelufy.jpa.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -31,7 +34,8 @@ public class CustomerController {
 
     @GetMapping("/{id}")
     public Customer getCustomer(@PathVariable long id) {
-        return customerRepository.findById(id);
+        return customerRepository.findById(id).
+                orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer " + id + " not found"));
     }
 
     @GetMapping("/p")
@@ -72,6 +76,7 @@ public class CustomerController {
     }
 
     @PostMapping
-    public void saveUser() {
+    public ResponseEntity<Customer> saveUser(@RequestBody @Valid Customer customer) {
+        return ResponseEntity.ok(this.customerRepository.save(customer));
     }
 }

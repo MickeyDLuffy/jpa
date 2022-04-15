@@ -16,7 +16,7 @@ import java.util.List;
  * and the Long is the daqta type of the Id column in thee Customer class **/
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
-    Customer findById(long id);
+//    Customer findById(long id);
 
     /***
      *  Pagina data with @Query and Page;

@@ -3,11 +3,11 @@ package com.github.mickeydeelufy.jpa.entity;
 import lombok.*;
 import org.hibernate.Hibernate;
 
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 
 /***@Entity specifies that this class represents a JPA entity. By default, the class name would be
@@ -32,7 +32,10 @@ public class Customer {
     private Long id;
     /** @Column is used if the column name differs from the field representing it**/
 //     @Column(name = "first_name")
+    @NotBlank(message = "First name must not be null or empty")
     private String firstName;
+    @NotBlank(message = "Last name must not be null or empty")
+
     private String lastName;
 
     @Override
