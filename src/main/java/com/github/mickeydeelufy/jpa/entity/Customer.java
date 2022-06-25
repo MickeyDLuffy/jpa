@@ -2,11 +2,10 @@ package com.github.mickeydeelufy.jpa.entity;
 
 import lombok.*;
 import org.hibernate.Hibernate;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
@@ -30,6 +29,13 @@ import java.util.Objects;
  * This is required by JPA. We do not use the it explicitly
  * **/
 //@NoArgsConstructor
+
+/**
+ * This @EntityListeners(AuditingEntityListener.class) is neccesary for JPA
+ * to provide the @EntityListeners annotation to specify callback listener classes.
+ * if not added, createdAt and the rest of the auditing functions return null
+ */
+@EntityListeners(AuditingEntityListener.class)
 public class Customer {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
@@ -42,7 +48,8 @@ public class Customer {
 
     private String lastName;
 
-    @FutureOrPresent(message = "The date must be today or future")
+    @CreatedDate
+//    @FutureOrPresent(message = "The date must be today or future")
     private LocalDateTime createdDate;
 
     /**
