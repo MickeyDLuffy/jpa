@@ -16,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Stack;
 
 @RestController
 @RequestMapping("api/v1/customers")
@@ -25,6 +26,7 @@ public class CustomerController {
 
     @GetMapping
     public List<Customer> getCustomers() {
+
        return customerRepository.findAll(Sort.by("firstName").descending()); // using Sort.by
         /** **
          * U can use JpaSort.unsafe(property) when sorting by a property that doesnt exist directly on the entity
@@ -45,7 +47,7 @@ public class CustomerController {
                         .profession("lol");
         System.out.println(testFluentAccesor.name());
         List.of(Sort.Order.by("firstname"),Sort.Order.by("firstname") );
-        return customerRepository.findAllPaged(PageRequest.of(0,1));
+        return customerRepository.findAllPaged(PageRequest.of(5,3));
     }
 
     @GetMapping("/slice")
