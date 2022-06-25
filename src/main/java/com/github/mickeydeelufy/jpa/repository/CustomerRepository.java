@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 /** The generic params of JpaRepository (Customer, Long): Customer represents the jpa entity whose repository this is
  * and the Long is the daqta type of the Id column in thee Customer class **/
@@ -76,4 +77,6 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 //    @Transactional
 //    @Query(value = "INSERT INTO Customer(id, firstname, lastName ) VALUES(4L, 'Linlin', 'Charlotte')", nativeQuery = true)
 //    void insertIntoTable() ;
+
+    Customer getCustomerByNickName(@Param("nickName") String nickName);
 }

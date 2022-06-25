@@ -7,7 +7,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Objects;
 
 /***@Entity specifies that this class represents a JPA entity. By default, the class name would be
@@ -37,6 +41,15 @@ public class Customer {
     @NotBlank(message = "Last name must not be null or empty")
 
     private String lastName;
+
+    @FutureOrPresent(message = "The date must be today or future")
+    private LocalDateTime createdDate;
+
+    /**
+     * Your Nicki must be of the pattern "DLUFFY-100"
+     */
+    @Pattern(regexp  = "^DLUFFY-(\\d){3}$", message = "Nickname must be in the format 'DLUFFY-100'")
+    private String nickName;
 
     @Override
     public boolean equals(Object o) {

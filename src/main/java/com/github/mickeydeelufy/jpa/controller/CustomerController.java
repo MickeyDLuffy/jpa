@@ -11,13 +11,15 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 import java.util.Stack;
-
+@Validated
 @RestController
 @RequestMapping("api/v1/customers")
 public class CustomerController {
@@ -38,6 +40,18 @@ public class CustomerController {
     public Customer getCustomer(@PathVariable long id) {
         return customerRepository.findById(id).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer " + id + " not found"));
+    }
+
+    /**
+     * Validating a pathvariable with @Pattern and @Validated on the restcontroller
+     * We added a handler in the controller advice too
+     * @param nickname
+     * @return
+     */
+    @GetMapping("/{nickname}/nicki")
+    public ResponseEntity<Customer> getCustomerByNickname(@Pattern(regexp = "^DLUFFY-(\\d){3}$",
+            message = "Nickname must be in the format 'DLUFFY-100'") @PathVariable String nickname ) {
+        return ResponseEntity.ok(customerRepository.getCustomerByNickName(nickname));
     }
 
     @GetMapping("/p")
