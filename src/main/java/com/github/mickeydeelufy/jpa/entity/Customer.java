@@ -1,5 +1,6 @@
 package com.github.mickeydeelufy.jpa.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import org.hibernate.Hibernate;
 import org.springframework.data.annotation.CreatedDate;
@@ -48,6 +49,8 @@ public class Customer {
 
     private String lastName;
 
+    @JsonFormat
+            (shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
     @CreatedDate
 //    @FutureOrPresent(message = "The date must be today or future")
     private LocalDateTime createdDate;

@@ -4,6 +4,8 @@ import com.github.mickeydeelufy.jpa.dto.Pageable;
 import com.github.mickeydeelufy.jpa.dto.TestFluentAccesor;
 import com.github.mickeydeelufy.jpa.entity.Customer;
 import com.github.mickeydeelufy.jpa.repository.CustomerRepository;
+import com.github.mickeydeelufy.jpa.service.CustomerService;
+import com.github.mickeydeelufy.jpa.util.ApiPath;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,15 +23,17 @@ import java.util.List;
 import java.util.Stack;
 @Validated
 @RestController
-@RequestMapping("api/v1/customers")
+@RequestMapping(ApiPath.CUSTOMERS)
 public class CustomerController {
     @Autowired
-    private CustomerRepository customerRepository;
+    private  CustomerRepository customerRepository;
+
+    @Autowired
+    private CustomerService customerService ;
 
     @GetMapping
     public List<Customer> getCustomers() {
-
-       return customerRepository.findAll(Sort.by("firstName").descending()); // using Sort.by
+         return customerService.getCustomers();
         /** **
          * U can use JpaSort.unsafe(property) when sorting by a property that doesnt exist directly on the entity
          */
@@ -38,10 +42,13 @@ public class CustomerController {
 
     @GetMapping("/{id}")
     public Customer getCustomer(@PathVariable long id) {
-        return customerRepository.findById(id).
-                orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer " + id + " not found"));
+        return customerService.getCustomer(id);
     }
 
+    @GetMapping("/test")
+    public String testingCOnro() {
+        return "tested";
+    }
     /**
      * Validating a pathvariable with @Pattern and @Validated on the restcontroller
      * We added a handler in the controller advice too
@@ -93,6 +100,6 @@ public class CustomerController {
 
     @PostMapping
     public ResponseEntity<Customer> saveUser(@RequestBody @Valid Customer customer) {
-        return ResponseEntity.ok(this.customerRepository.save(customer));
+        return new ResponseEntity<>(customerService.saveCustomer(customer), HttpStatus.CREATED);
     }
 }
