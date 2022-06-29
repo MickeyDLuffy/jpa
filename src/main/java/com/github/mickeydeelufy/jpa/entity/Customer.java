@@ -38,6 +38,12 @@ import java.util.Objects;
  */
 @EntityListeners(AuditingEntityListener.class)
 public class Customer {
+
+    public Customer(String firstName, String lastName, String nickName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.nickName = nickName;
+    }
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
@@ -49,8 +55,8 @@ public class Customer {
 
     private String lastName;
 
-    @JsonFormat
-            (shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
+//    @JsonFormat
+//            (shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
     @CreatedDate
 //    @FutureOrPresent(message = "The date must be today or future")
     private LocalDateTime createdDate;

@@ -87,7 +87,7 @@ class CustomerControllerTest {
     void getCustomerShouldReturnOnlyOneCustomerHavingId() throws Exception {
 //         var c = new Customer()
         when(customerService.getCustomer(10L)).thenReturn(data.get(0));
-        MvcResult mvcResult = mvc.perform(get(ApiPath.CUSTOMERS + "/10")
+        MvcResult mvcResult = mvc.perform(get(ApiPath.CUSTOMERS + "/{id}" ,10)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -102,26 +102,39 @@ class CustomerControllerTest {
     @Test
     void customerWasNotFoundShouldThrowException() throws Exception {
         when(customerService.getCustomer(2L)).thenThrow(ResponseStatusException.class);
-        this.mvc.perform(get(ApiPath.CUSTOMERS + "/2"))
+        this.mvc.perform(get(ApiPath.CUSTOMERS + "/{id}" ,2))
                 .andExpect(status().isNotFound());
 
         verify(customerService, times(1)).getCustomer(2L);
     }
 
     @Test
-    void saveUserSavesUserAndReturnsSavedUserWith201() throws Exception {
-        when(customerService.saveCustomer(data.get(0))).thenReturn(data.get(0));
+    void saveUserHasInvalidRequestBodyAndReturnsBadRequest() throws Exception{
+        var customer = new Customer("", "Emperor", "DLUFFY-100");
 
+        when(customerService.saveCustomer(customer)).thenReturn(customer);
+        mvc.perform(post(ApiPath.CUSTOMERS)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(TestUtil.stringify(customer)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors").exists())
+                .andExpect(jsonPath("$.errors.firstName").value("First name must not be null or empty"))
+                .andExpect(jsonPath("$.errors.firstName").isNotEmpty());
+    }
+    @Test
+    void saveUserSavesUserAndReturnsSavedUserWith201() throws Exception {
+        var customer = new Customer("Dluffy", "Emperor", "DLUFFY-100");
+        when(customerService.saveCustomer(data.get(0))).thenReturn(data.get(0));
         MvcResult mvcResult = this.mvc.perform(post(ApiPath.CUSTOMERS)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(String.valueOf(data.get(0))))
+                .content(TestUtil.stringify(customer)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.firstName", is("Dluffy")))
                 .andReturn();
 
         verify(customerService, times(1)).saveCustomer(data.get(0));
         assertThat(mvcResult.getResponse().getContentAsString())
-                .isEqualTo(String.valueOf(data.get(0)))
+                .isEqualTo(TestUtil.stringify(data.get(0)))
 
         ;
     }
