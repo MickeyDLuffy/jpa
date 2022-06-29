@@ -19,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
+import java.net.URI;
 import java.util.List;
 import java.util.Stack;
 @Validated
@@ -100,6 +101,8 @@ public class CustomerController {
 
     @PostMapping
     public ResponseEntity<Customer> saveUser(@RequestBody @Valid Customer customer) {
-        return new ResponseEntity<>(customerService.saveCustomer(customer), HttpStatus.CREATED);
+        var newCustomer = customerService.saveCustomer(customer);
+        return ResponseEntity.created(URI.create(ApiPath.CUSTOMERS + "/" + newCustomer.getId()))
+                .body(newCustomer);
     }
 }

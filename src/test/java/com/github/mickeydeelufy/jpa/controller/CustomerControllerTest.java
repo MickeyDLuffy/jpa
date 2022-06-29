@@ -1,7 +1,5 @@
 package com.github.mickeydeelufy.jpa.controller;
 
-import static org.assertj.core.api.Assertions.*;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.mickeydeelufy.jpa.entity.Customer;
 import com.github.mickeydeelufy.jpa.repository.CustomerRepository;
@@ -13,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -22,14 +19,12 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.isNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = CustomerController.class)
@@ -85,17 +80,18 @@ class CustomerControllerTest {
 
     @Test
     void getCustomerShouldReturnOnlyOneCustomerHavingId() throws Exception {
-//         var c = new Customer()
         when(customerService.getCustomer(10L)).thenReturn(data.get(0));
-        MvcResult mvcResult = mvc.perform(get(ApiPath.CUSTOMERS + "/{id}" ,10)
+        String mvcResult = mvc.perform(get(ApiPath.CUSTOMERS + "/{id}" ,10)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(10)))
-                .andReturn();
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
 
-        assertThat(mvcResult.getResponse().getContentAsString())
+        assertThat(mvcResult)
                 .isEqualTo(objectMapper.writeValueAsString(data.get(0)));
     }
 
@@ -109,7 +105,7 @@ class CustomerControllerTest {
     }
 
     @Test
-    void saveUserHasInvalidRequestBodyAndReturnsBadRequest() throws Exception{
+    void saveUserHasInvalidRequestBodyAndReturnsBadRequest() throws Exception {
         var customer = new Customer("", "Emperor", "DLUFFY-100");
 
         when(customerService.saveCustomer(customer)).thenReturn(customer);
@@ -120,21 +116,25 @@ class CustomerControllerTest {
                 .andExpect(jsonPath("$.errors").exists())
                 .andExpect(jsonPath("$.errors.firstName").value("First name must not be null or empty"))
                 .andExpect(jsonPath("$.errors.firstName").isNotEmpty());
+
     }
     @Test
     void saveUserSavesUserAndReturnsSavedUserWith201() throws Exception {
-        var customer = new Customer("Dluffy", "Emperor", "DLUFFY-100");
-        when(customerService.saveCustomer(data.get(0))).thenReturn(data.get(0));
-        MvcResult mvcResult = this.mvc.perform(post(ApiPath.CUSTOMERS)
+        var customer = data.get(0);
+        when(customerService.saveCustomer(customer)).thenReturn(customer);
+        String mvcResult = this.mvc.perform(post(ApiPath.CUSTOMERS)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(TestUtil.stringify(customer)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.firstName", is("Dluffy")))
-                .andReturn();
+                .andExpect(header().stringValues("Location", ApiPath.CUSTOMERS + "/" + customer.getId()))
+                .andExpect(jsonPath("$.firstName").value("Mickey"))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-        verify(customerService, times(1)).saveCustomer(data.get(0));
-        assertThat(mvcResult.getResponse().getContentAsString())
-                .isEqualTo(TestUtil.stringify(data.get(0)))
+        verify(customerService, times(1)).saveCustomer(customer);
+        assertThat(mvcResult)
+                .isEqualTo(TestUtil.stringify(customer));
 
         ;
     }
