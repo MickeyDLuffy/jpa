@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE file [
+        <!ELEMENT firstName (#PCDATA)>
+        <!ELEMENT lastName (#PCDATA)>
+        <!ELEMENT mine (#PCDATA)>
+        <!ELEMENT mom (#PCDATA)>
+        <!ELEMENT name  (firstName, lastName) >
+        <!ELEMENT size (#PCDATA)  >
+        <!ELEMENT file (name, size) >
+        ]
+>

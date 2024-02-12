@@ -1,17 +1,14 @@
 package com.github.mickeydeelufy.jpa.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import org.hibernate.Hibernate;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.*;
-import javax.validation.constraints.FutureOrPresent;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.Objects;
 
 /***@Entity specifies that this class represents a JPA entity. By default, the class name would be
@@ -54,7 +51,6 @@ public class Customer {
     @NotBlank(message = "Last name must not be null or empty")
 
     private String lastName;
-
 //    @JsonFormat
 //            (shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
     @CreatedDate
